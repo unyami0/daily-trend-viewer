@@ -35,19 +35,19 @@ IMG_CACHE_MAX = 600
 
 # ---------------------------------------------------------------- 유튜브
 # 카테고리 → 유튜브 검색어 매핑
+# 카테고리 → 유튜브 검색어 매핑 (pluuug 분야: AI/AX 자동화·SMB·견적·정산·세금계산서·CRM)
+# 긴 키워드 조합은 검색 결과가 0건으로 나와, 카테고리마다 테스트를 거친 짧은 자연어 검색어
+# 3~4개를 merge_yt_searches()로 합쳐 조회수순 재정렬(AI 탭의 AI_YT_QUERIES와 같은 방식)
 CATEGORIES = {
-    "먹방": "먹방",
-    "뷰티/패션": "뷰티 메이크업 패션",
-    "브이로그": "브이로그",
-    "예능/코미디": "예능 웃긴 영상",
-    "영화/드라마": "영화 드라마 리뷰",
-    "테크/IT": "테크 리뷰",
-    "지식/교육": "지식 교양",
-    "여행": "여행",
-    "동물": "강아지 고양이",
+    "AI 자동화": ["AI 업무 자동화", "AI 에이전트", "업무 자동화 AI", "RPA 자동화"],
+    "AX 전환": ["AX 전환", "디지털 전환", "중소기업 AI 도입", "AI 도입 사례"],
+    "SMB 스몰비즈니스": ["소상공인 AI", "1인기업 자동화", "스타트업 자동화"],
+    "견적·계약": ["견적서 자동화", "계약서 작성", "전자계약"],
+    "정산·세금계산서": ["세금계산서 발행", "부가세 신고", "전자세금계산서", "정산 자동화"],
+    "CRM·고객관리": ["고객관리 프로그램", "거래처 관리", "세일즈 CRM", "영업 자동화"],
 }
 # "전체" 탭은 아래 카테고리들을 합쳐 조회수순으로 재정렬
-ALL_MERGE = ["먹방", "브이로그", "예능/코미디", "뷰티/패션", "영화/드라마", "여행"]
+ALL_MERGE = list(CATEGORIES.keys())
 
 # 검색 필터 protobuf: 업로드 날짜 (2=오늘, 3=이번 주, 4=이번 달)
 PERIOD_CODE = {"day": 2, "week": 3, "month": 4}
@@ -64,8 +64,8 @@ PERIOD_EXCLUDE = {
 IG_APP_ID = "936619743392459"  # instagram.com 웹이 쓰는 공개 앱 ID
 ACCOUNTS_FILE = os.path.join(BASE_DIR, "reels_accounts.json")
 DEFAULT_IG_ACCOUNTS = [
-    "openai", "runwayapp", "pika_labs", "lumalabsai", "midjourney",
-    "klingai_official", "heygen_official", "higgsfield.ai", "googledeepmind",
+    "modusign", "glosign_daily", "shiftee.io", "3o3_official", "cashnote.kr",
+    "wrtn.ai", "sw.never.sleep", "jandi.korea", "_remember_official", "toss.im",
 ]
 
 # ---------------------------------------------------------------- X (트위터)
@@ -260,11 +260,11 @@ def get_videos(category: str, period: str, shorts: bool, force: bool, enrich: bo
         if query:
             queries = [query]
         elif category == "전체":
-            queries = [CATEGORIES[c] for c in ALL_MERGE]
+            queries = [q for c in ALL_MERGE for q in CATEGORIES[c]]
         elif category == "AI":
             queries = AI_YT_QUERIES
         else:
-            queries = [CATEGORIES.get(category, category)]
+            queries = CATEGORIES.get(category, [category])
         vids = merge_yt_searches(queries, period, shorts)
         if enrich:
             enrich_likes(vids)
