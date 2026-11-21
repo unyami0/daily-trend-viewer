@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: "23 * * * *"  # 매시 23분 (UTC 기준, 실제 실행은 몇 분 지연될 수 있음)
+    - cron: "0 22 * * *"  # 매일 07:00 KST (UTC 22:00 전날)
   workflow_dispatch:
 
 permissions:
